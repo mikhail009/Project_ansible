@@ -29,7 +29,7 @@ Dependencies
 
 Example Playbook
 ----------------
-playbook3.yml
+"playbook3.yml
 
 ---
 - name: install fo hren
@@ -38,13 +38,9 @@ playbook3.yml
 
 
   roles:
-    - start_playbook
+    - start_playbook"
 
 
-License
--------
-
-BSD
 
 Author Information
 ------------------

@@ -22,7 +22,7 @@ Readme
 Пример Playbook
 ----------------
 playbook3.yml
-
+```
 ---
 - name: install fo hren
   hosts: all
@@ -31,7 +31,7 @@ playbook3.yml
 
   roles:
     - start_playbook
-
+```
 
 
 Остальная информация

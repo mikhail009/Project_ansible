@@ -1,0 +1,148 @@
+---
+# tasks file for start_playbook
+
+- name: Chek for Linux Version
+  debug: var=ansible_os_family
+
+- name: File existence check
+  stat:
+    path: /etc/zabbix/zabbix_agentd.conf
+  register: register_name
+
+
+
+- name: Update apt packages
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+    force_apt_get: true
+
+- name: Download zabbix_agentd .deb package
+  get_url:
+    url: https://repo.zabbix.com/zabbix/5.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.0-1+focal_all.deb
+    dest: /tmp/zabbix-release_5.0-1+focal_all.deb
+
+- name: Install zabbix-agent
+  apt:
+    deb: /tmp/zabbix-release_5.0-1+focal_all.deb
+
+- name: Update and upgrade apt packages
+  apt:  
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400 #One day
+
+- name: Install zabbix
+  apt:
+    name=zabbix-agent
+
+- name: Stop service zabbix-agent
+  service:
+    name: zabbix-agent
+    state: stopped
+
+- name: Create new zabbix config file from template
+  copy:
+    src: zabbix_agentd_for_ubuntu.conf
+    dest: /etc/zabbix/zabbix_agentd.conf
+
+- name: Start service zabbix-agent
+  service:
+    name: zabbix-agent
+    state: started
+    enabled: yes
+
+
+- name: Update and upgrade apt packages
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+    force_apt_get: true
+
+- name: Install mlocate, tree
+  apt:
+    name: ['mlocate', 'tree']
+    state: latest
+
+
+- name: Add user to remote hosts for Debian
+  user: 
+    name: ansible 
+    groups: sudo 
+    shell: /bin/bash
+    password: "{{ 'pHkADUf3d7uGBSwVLeMXsPIfb4l2TaXWvprMz868ZbH8HLaiDeh.' | password_hash('sha512') }}"
+
+- name: Add SSH keys to remote hosts
+  authorized_key: 
+    user: ansible 
+    key: "{{ lookup('file', 'id_rsa.pub') }}"
+
+
+- name: Add user backuper to remote hosts for Debian
+  user: 
+    name: backuper 
+    groups: sudo 
+    shell: /bin/bash 
+    password: "{{ '~4szdKLN3G]1r%JSG8' | password_hash('sha512') }}" 
+- name: Add SSH keys backuper to remote hosts
+  authorized_key: 
+    user: backuper 
+    key: " {{ lookup('file', 'id_rsa2.pub') }}"
+
+- name: Add group projects
+  ansible.builtin.group:
+    name: projects
+    state: present
+
+- name: Add folder /projects
+  file:
+    path: /projects
+    mode: 0770
+    owner: ansible
+    group: projects
+    state: directory
+
+- name: Add the user Veeam Linux user Backup
+  user:
+    name: veeam-user
+    comment: Veeam Linux user Backup
+    uid: 90
+    group: users
+    home: /var/lib/veeam-user
+    shell: /bin/bash
+    password_lock: true
+
+
+- name: Add a new string at the end of the file
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: ''
+    insertafter: EOF
+    line: 'veeam-user ALL=NOPASSWD: ALL'
+
+- name: Add folder .ssh veeam-user
+  file:
+    path: /var/lib/veeam-user/.ssh
+    owner: veeam-user
+    group: root
+    state: directory
+    mode: '0700'
+
+- name: Add file authorized_keys
+  file:
+    path: /var/lib/veeam-user/.ssh/authorized_keys
+    owner: veeam-user
+    group: users
+    mode: '0644'
+    state: touch
+
+- name: Add ssh-rsa authorized_keys
+  lineinfile:
+    dest: /var/lib/veeam-user/.ssh/authorized_keys
+    regexp: ''
+    insertafter: EOF
+    line: 'ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAphp/beCPltib1H0bxGQ/zxUzqHba2MXZPUXDAcES3Xv6TuJHSL5XeZPZfG2T3LGFmQ8KuS02AcRMkDwKI1VGz8AmNXc9OR7ITRQAEpz3WpO0oKxmKePu72Jh/ZXvcgSA09hByuH+Heu4WyYQsowrNjnUzJPLrarEexqnuIz7t7h9tLmfJo9WFz9L2fQz2/UUDvRpZQUwOnv82+8XcX4MZrtEoNl3a523qWJfImkNvJcoExfkCl9JFAEz8+BtE+V8ecpPq1U5HUed2dBMEkm3LWRDyd/webMdXvl2knueG2tFMUO4laMzuDLnjbdLaHiK5gzNLffsFsmh47HOFHy1GQ== rsa-key-20201217'
+
+- name: Set timezone to Europe/Moscow
+  community.general.timezone:
+    name: Europe/Moscow

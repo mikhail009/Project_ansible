@@ -1,11 +1,10 @@
 Readme
 =========
-#### Стартовый плейбук для DEBIAN
+#### Сommon playbook
 
 - Устанавливает “Zabbix-agent” и “mlocate” в “Debian”
 - Устанавливает "Zabbix-agent" в "RedHat"
 - Добавляет “ansible” пользователя   в “Ubuntu”
-- Добавляет "ansible" пользователя  в "RedHat"
 - Устанавливает “nano”, “wget”,  “unzip”,  “traceroute”,  “mlocate",  “htop  в ”RedHat"
 - Создаёт группу “Projects” в “Debian” и  “RedHat” , создаёт папку “Projects в корне”,  выдаёт группе “Projects” полные права на папку “Projects”, делает владельцам папки "ansible"
 - Добавляет  пользователя “veeam-user” с помощью которого подключается veeam-agent и создаёт бэкапы VM при помощи хэштэгов в “Vcenter”

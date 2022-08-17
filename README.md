@@ -18,18 +18,10 @@ Requirements
 
 Запускается командой #ansible-playbook -l new playbook3.yml -K 
 
-Role Variables
---------------
-
-Отсутсвуют
-
-Dependencies
-------------
-
 
 Example Playbook
 ----------------
-"playbook3.yml
+playbook3.yml
 
 ---
 - name: install fo hren
@@ -38,7 +30,7 @@ Example Playbook
 
 
   roles:
-    - start_playbook"
+    - start_playbook
 
 
 

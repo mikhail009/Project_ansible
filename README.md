@@ -23,7 +23,7 @@ Readme
 playbook3.yml
 ```
 ---
-- name: install fo hren
+- name: install fo playbook
   hosts: all
   become: yes
 
@@ -31,8 +31,3 @@ playbook3.yml
   roles:
     - start_playbook
 ```
-
-
-Остальная информация
-------------------
-Создал Михаил Хафизов
